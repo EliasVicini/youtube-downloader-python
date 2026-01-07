@@ -23,16 +23,17 @@ sudo apt install ffmpeg
 
 ### Windows
 
-Baixe em: https://ffmpeg.org/download.html
+    Baixe em: https://ffmpeg.org/download.html
 
-Extraia e adicione o caminho bin ao PATH
+    Extraia e adicione o caminho bin ao PATH
 
-Teste: ffmpeg -version
+    Teste: ffmpeg -version
 
 
 ### Criando o ambiente virtual (venv)
 Linux / macOS
 ```bash
+cd /caminho_do_projeto/
 python3 -m venv venv
 source venv/bin/activate
 ```
@@ -40,6 +41,7 @@ source venv/bin/activate
 
 Windows (PowerShell)
 ```bash
+cd /caminho_do_projeto/
 python -m venv venv
 venv\Scripts\Activate.ps1
 ```
@@ -55,14 +57,18 @@ pip install -r requirements.txt
 ```
 
 ### ▶️ Executando o programa
+Via Terminal
 ```bash
-python youtube_downloader.py  // Via Terminal
+python youtube_downloader.py
 ```
+Via Interface Grafica
 ```bash
 python youtube_gui.py  // Via Interface Gráfica
 ```
 
-O programa irá:
+---
+
+## O Programa Irá:
 
     Solicitar a URL do YouTube
 
@@ -72,5 +78,4 @@ O programa irá:
 
 📂 Onde o vídeo é salvo?
 
-    ✔️ Na mesma pasta onde o script está sendo executado
-    ✔️ Com o nome original do vídeo
+    ✔️ Na mesma pasta onde o script está sendo executado ou em uma pasta da sua escolha

@@ -103,6 +103,8 @@ def main():
         return
 
     print("Qualidades disponíveis:\n")
+    print("0 - ❌ Sair do programa")  # 👈 NOVO
+
     for i, f in enumerate(formatos, start=1):
         tamanho = (
             f"{f['filesize'] / (1024 * 1024):.1f} MB"
@@ -111,6 +113,11 @@ def main():
         print(f"{i} - 🎬 {f['resolution']} ({tamanho})")
 
     escolha = input("\nDigite o número da qualidade desejada: ").strip()
+
+    # 👇 NOVO: saída limpa do programa
+    if escolha == "0":
+        print("\n👋 Programa finalizado pelo usuário.")
+        sys.exit(0)
 
     try:
         index = int(escolha) - 1
