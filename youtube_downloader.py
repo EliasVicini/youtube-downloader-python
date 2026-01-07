@@ -2,69 +2,53 @@ import yt_dlp
 import sys
 
 
-def listar_formatos(url):
+# =========================
+# OBTÉM INFO DO VÍDEO
+# =========================
+def obter_info_video(url):
     ydl_opts = {
         "quiet": True,
         "skip_download": True,
-        "noplaylist": True,  # 🔴 ESSENCIAL
+        "noplaylist": True,
+        "no_warnings": True,
     }
 
     with yt_dlp.YoutubeDL(ydl_opts) as ydl:
         info = ydl.extract_info(url, download=False)
 
-    # Se mesmo assim vier playlist, pega só o primeiro vídeo
     if "entries" in info:
         info = info["entries"][0]
 
-    formats = info.get("formats", [])
-    videos = []
-
-    for f in formats:
-        if f.get("vcodec") != "none" and f.get("acodec") != "none":
-            if f.get("resolution"):
-                videos.append({
-                    "format_id": f["format_id"],
-                    "resolution": f["resolution"],
-                    "filesize": f.get("filesize"),
-                })
-
-    # remove resoluções duplicadas
-    unicos = {}
-    for v in videos:
-        unicos[v["resolution"]] = v
-
-    return list(unicos.values())
+    return info
 
 
-
+# =========================
+# BAIXA VÍDEO
+# =========================
 def baixar_video(url, format_id):
     ydl_opts = {
         "format": format_id,
         "outtmpl": "%(title)s.%(ext)s",
         "merge_output_format": "mp4",
-        "noplaylist": True,  # 🔴 ESSENCIAL
+        "noplaylist": True,
+
+        # 🔽 MELHORES CONFIGURAÇÕES
+        "quiet": False,
+        "no_warnings": True,
+        "progress_with_newline": False,
+
+        # 👇 evita problemas futuros com YouTube
+        # requer node instalado
+        # "js_runtimes": ["node"],
     }
 
     with yt_dlp.YoutubeDL(ydl_opts) as ydl:
         ydl.download([url])
 
 
-def obter_info_video(url):
-    ydl_opts = {
-        "quiet": True,
-        "skip_download": True,
-        "noplaylist": True,
-    }
-
-    with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-        info = ydl.extract_info(url, download=False)
-
-    # Se vier playlist por acidente, pega o primeiro vídeo
-    if "entries" in info:
-        info = info["entries"][0]
-
-    return info
-
+# =========================
+# MAIN
+# =========================
 def main():
     url = input("Cole a URL do YouTube: ").strip()
 
@@ -85,10 +69,12 @@ def main():
     for f in info.get("formats", []):
         if f.get("vcodec") != "none" and f.get("acodec") != "none":
             if f.get("resolution"):
+                filesize = f.get("filesize") or f.get("filesize_approx")
+
                 formatos.append({
                     "format_id": f["format_id"],
                     "resolution": f["resolution"],
-                    "filesize": f.get("filesize"),
+                    "filesize": filesize,
                 })
 
     # remove resoluções duplicadas
@@ -103,18 +89,18 @@ def main():
         return
 
     print("Qualidades disponíveis:\n")
-    print("0 - ❌ Sair do programa")  # 👈 NOVO
+    print("0 - ❌ Sair do programa")
 
     for i, f in enumerate(formatos, start=1):
-        tamanho = (
-            f"{f['filesize'] / (1024 * 1024):.1f} MB"
-            if f["filesize"] else "tamanho desconhecido"
-        )
+        if f["filesize"]:
+            tamanho = f"{f['filesize'] / (1024 * 1024):.1f} MB"
+        else:
+            tamanho = "streaming (tamanho variável)"
+
         print(f"{i} - 🎬 {f['resolution']} ({tamanho})")
 
     escolha = input("\nDigite o número da qualidade desejada: ").strip()
 
-    # 👇 NOVO: saída limpa do programa
     if escolha == "0":
         print("\n👋 Programa finalizado pelo usuário.")
         sys.exit(0)
@@ -132,6 +118,7 @@ def main():
     baixar_video(url, formato["format_id"])
 
     print("\n✅ Download concluído!")
+
 
 if __name__ == "__main__":
     main()
